@@ -1,10 +1,16 @@
-#include <stdio.h>
-#include <unistd.h>
+#include <stdio.h> //printf
+#include <unistd.h> //sleep and read
+#include <termios.h> //RAW mode
+#include <pthread.h> //seperate input thread
 #include "graphics.h"
 #include "main.h"
 
 
+char direction = 'l';
+
+
 int main(int arg_size, char **args){
+
 	//default values
 	int width = 25;
 	int height = 10;
@@ -29,26 +35,32 @@ int main(int arg_size, char **args){
 	snakeArray[9] = height/2;
 	snakeArray[10] = -1;
 
-	
+
+	enableRawMode();
+
+	pthread_t input;
+	pthread_create(&input, NULL, inputThread, NULL);
+
 	while (1==1){
-		*snakeArray = moveSnake(snakeArray, 'r');
+
+		*snakeArray = moveSnake(snakeArray, direction);
 	
 		printf("\e[1;1H\e[2J");
 		drawGrid(width, height, snakeArray);
-		
-		sleep(1);
-	}
 
+	    struct timespec remaining, request = {0, 200000000};
+		nanosleep(&request, &remaining);
+	}
 }
 
 
 int moveSnake(int *pSnakeArray, char direction){
 
 	int arrayLen = 0;
-    
-    while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
-        arrayLen++;
-    }
+	
+	while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+		arrayLen++;
+	}
 
 	int xDirection = 0;
 	int yDirection = 0;
@@ -97,4 +109,44 @@ int moveSnake(int *pSnakeArray, char direction){
 	
 	return *pSnakeArray;
 	
+}
+
+
+void *inputThread(){
+	printf("hi");
+	while (1==1) {
+		char c;
+		read(STDIN_FILENO, &c, 1);
+
+		if (c == '\x1b') {
+		
+			char seq[3];
+			
+			read(STDIN_FILENO, &seq[0], 1);
+			read(STDIN_FILENO, &seq[1], 1);
+
+			printf("%d ", seq[0]);
+			printf("%d ", seq[1]);
+			
+			if (seq[0] == 91) {
+				switch (seq[1]) {
+					case 65: direction = 'u'; break;
+					case 66: direction = 'd'; break;
+					case 67: direction = 'r'; break;
+					case 68: direction = 'l'; break;
+				}
+			}
+		}
+	}
+}
+
+
+int enableRawMode() {
+	struct termios raw;
+	
+	tcgetattr(STDIN_FILENO, &raw);
+	
+	raw.c_lflag &= ~(ECHO | ICANON);
+	
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
