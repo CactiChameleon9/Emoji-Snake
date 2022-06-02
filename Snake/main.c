@@ -84,7 +84,7 @@ int moveSnake(int *pSnakeArray, char direction){
 		*/
 
 	//move each value back 2 (cutting of the last 2 off)
-	for (int i = arrayLen; i > 0; i--){
+	for (int i = arrayLen; i > 1; i--){
 		*(pSnakeArray + i) = *(pSnakeArray + i - 2);
 	}
 	//set the last value to -1
