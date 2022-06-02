@@ -42,10 +42,17 @@ int main(int arg_size, char **args){
 	pthread_t input;
 	pthread_create(&input, NULL, inputThread, NULL);
 
+	int alive = 1;
+
 	//main loop 	TODO: exit without ^C
-	while (1){
+	while (alive == 1){
 		//recalc the snakeArray before moving
 		*snakeArray = moveSnake(snakeArray, direction);
+
+		if (checkSnakeCrash(snakeArray, width, height) == 1){
+			printf("ERROR");
+			alive = 0;
+		}
 	
 		printf("\e[1;1H\e[2J"); //clears terminal before redraw
 		drawGrid(width, height, snakeArray);
@@ -114,6 +121,37 @@ int moveSnake(int *pSnakeArray, char direction){
 	return *pSnakeArray;
 	
 }
+
+int checkSnakeCrash(int *pSnakeArray, int width, int height){
+	int arrayLen = 0;
+	
+	while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+		arrayLen++;
+	}
+
+	//check for collisions
+	for (int i = 0; i < arrayLen; i += 2){
+		for (int j = i + 2; j < arrayLen; j += 2){
+
+		//check both x and y
+			if (*(pSnakeArray + i) == *(pSnakeArray + j) &&
+				*(pSnakeArray + i + 1) == *(pSnakeArray + j + 1)) {
+				return 1; //collision
+			}	
+		}
+
+		//check if out of bounds
+		if (*(pSnakeArray + i) >= width || *(pSnakeArray + i + 1) >= height ||
+			*(pSnakeArray + i) <= -1 || *(pSnakeArray + i + 1) <= -1){
+			return 1; //collision
+		}	
+	}
+
+	return 0;
+
+	
+}
+
 
 
 void *inputThread(){
