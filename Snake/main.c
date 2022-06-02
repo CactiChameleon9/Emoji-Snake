@@ -42,14 +42,15 @@ int main(int arg_size, char **args){
 	pthread_t input;
 	pthread_create(&input, NULL, inputThread, NULL);
 
-	//main input 	TODO: exit without ^C
+	//main loop 	TODO: exit without ^C
 	while (1){
-
+		//recalc the snakeArray before moving
 		*snakeArray = moveSnake(snakeArray, direction);
 	
-		printf("\e[1;1H\e[2J");
+		printf("\e[1;1H\e[2J"); //clears terminal before redraw
 		drawGrid(width, height, snakeArray);
 
+		//sleep for 0.2 seconds before moving (nanosleep because sleep only supports ints)
 	    struct timespec remaining, request = {0, 200000000};
 		nanosleep(&request, &remaining);
 	}
