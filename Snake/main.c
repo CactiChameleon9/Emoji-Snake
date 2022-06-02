@@ -38,10 +38,12 @@ int main(int arg_size, char **args){
 
 	enableRawMode();
 
+	//seperate input thread so movement and input can have seperate timings
 	pthread_t input;
 	pthread_create(&input, NULL, inputThread, NULL);
 
-	while (1==1){
+	//main input 	TODO: exit without ^C
+	while (1){
 
 		*snakeArray = moveSnake(snakeArray, direction);
 	
@@ -64,7 +66,8 @@ int moveSnake(int *pSnakeArray, char direction){
 
 	int xDirection = 0;
 	int yDirection = 0;
-	
+
+	//generate the direction vectors to add to the current head coordinate
 	switch(direction){
 		case 'u':
 			xDirection = 0;
@@ -113,34 +116,50 @@ int moveSnake(int *pSnakeArray, char direction){
 
 
 void *inputThread(){
-	printf("hi");
-	while (1==1) {
+	while (1){
+		//take an input a character and set it to c
 		char c;
 		read(STDIN_FILENO, &c, 1);
 
-		if (c == '\x1b') {
-		
-			char seq[3];
-			
-			read(STDIN_FILENO, &seq[0], 1);
-			read(STDIN_FILENO, &seq[1], 1);
+		//verify the input is beginning of a special character
+		if (c != '\x1b') { return NULL; }
 
-			printf("%d ", seq[0]);
-			printf("%d ", seq[1]);
-			
-			if (seq[0] == 91) {
-				switch (seq[1]) {
-					case 65: direction = 'u'; break;
-					case 66: direction = 'd'; break;
-					case 67: direction = 'r'; break;
-					case 68: direction = 'l'; break;
-				}
-			}
+		//save the next 2 parts of the arrow
+		char seq[2];
+		
+		read(STDIN_FILENO, &seq[0], 1);
+		read(STDIN_FILENO, &seq[1], 1);
+		
+		//verify the input is actually an arrow key
+		if (seq[0] != 91) { return NULL; }
+
+		//change the direction depending on which arrow key is used (preventing opposite direction)
+		switch (seq[1]) {
+			case 65:
+				if (direction == 'd') { break; }
+				direction = 'u';
+				break;
+			case 66:
+				if (direction == 'u') { break; }
+				direction = 'd';
+				break;
+			case 67:
+				if (direction == 'l') { break; }
+				direction = 'r';
+				break;
+			case 68:
+				if (direction == 'r') { break; }
+				direction = 'l';
+				break;
 		}
 	}
 }
 
+//https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html#turn-off-echoing
 
+//raw mode == more control over the terminal input
+// allows me to get each character as they are entered in (ICANON)
+// and also hides the inputted characters (ECHO)
 int enableRawMode() {
 	struct termios raw;
 	
