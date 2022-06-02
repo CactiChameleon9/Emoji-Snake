@@ -5,69 +5,96 @@
 
 
 int main(int arg_size, char **args){
+	//default values
 	int width = 25;
 	int height = 10;
-	
+
+	//if there are enough arguments (0 is the executable name)
 	if (arg_size >= 3) {
 		width = *args[1];
 		height = *args[2];
 	}
 
-	int grid[width][height];
+	//make the snakeArray (1d because it holds the order) and add default snake
+	int snakeArray[width * height * 2 + 1];
+	snakeArray[0] = width/2 - 1;
+	snakeArray[1] = height/2;
+	snakeArray[2] = width/2 + 0;
+	snakeArray[3] = height/2;
+	snakeArray[4] = width/2 + 1;
+	snakeArray[5] = height/2;
+	snakeArray[6] = width/2 + 2;
+	snakeArray[7] = height/2;
+	snakeArray[8] = width/2 + 3;
+	snakeArray[9] = height/2;
+	snakeArray[10] = -1;
 
-	for (int i = 0; i < height; i++){
-		for (int j = 0; j < width; j++){
-			grid[j][i] = 0;
-		}
-	}
-
-	//start the snake
-	grid[10][5] = 3; //head
-	grid[11][5] = 2;
-	grid[12][5] = 2;
-	grid[13][5] = 2; //middle
-	grid[14][5] = 2;
-	grid[15][5] = 2;
-	grid[15][6] = 2;
-	grid[15][7] = 1; //tail
-
+	
 	while (1==1){
-		output_grid(width, height, grid);
+		*snakeArray = moveSnake(snakeArray, 'r');
+	
+		printf("\e[1;1H\e[2J");
+		drawGrid(width, height, snakeArray);
+		
 		sleep(1);
 	}
 
 }
 
 
-int output_grid(int width, int height, int grid[width][height]){
+int moveSnake(int *pSnakeArray, char direction){
 
-	printf("\e[1;1H\e[2J");
+	int arrayLen = 0;
+    
+    while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+        arrayLen++;
+    }
 
-	//the snake array will at most be the size of the grid doubled because xy, plus 1 for -1 ending
-	int snakeArray[width * height * 2 + 1];
-
-	//this is used to track what position in the array should be used for the body / tail 
-	int snakesFound = 0;
-
-	//iterate through the 2d array and populate the 1d aray
-	for (int i = 0; i < height; i++){
-		for (int j = 0; j < width; j++){
+	int xDirection = 0;
+	int yDirection = 0;
+	
+	switch(direction){
+		case 'u':
+			xDirection = 0;
+			yDirection = -1;
+			break;
 		
-			if (grid[j][i] == 3){
-				snakeArray[0] = j;
-				snakeArray[1] = i;
-			}
-				
-			if ((grid[j][i] == 2) || (grid[j][i] == 1)){ //TODO tail
-				snakesFound += 1;
-				snakeArray[0 + (snakesFound * 2)] = j;
-				snakeArray[1 + (snakesFound * 2)] = i;
-			}
-		}
+		case 'd':
+			xDirection = 0;
+			yDirection = 1;
+			break;
+		
+		case 'l':
+			xDirection = -1;
+			yDirection = 0;
+			break;
+		
+		case 'r':
+			xDirection = 1;
+			yDirection = 0;
+			break;
 	}
 
-	snakeArray[snakesFound * 2 + 2] = -1; //marker used to tell once the array is done
-		
-	drawGrid(width, height, snakeArray);
-}
+		/*
+		14 = 12
+		13 = 11
+		...
+		03 = 01
+		02 = 00
+		*/
 
+	//move each value back 2 (cutting of the last 2 off)
+	for (int i = arrayLen; i > 0; i--){
+		*(pSnakeArray + i) = *(pSnakeArray + i - 2);
+	}
+	//set the last value to -1
+	*(pSnakeArray + arrayLen) = -1;
+
+	//change the first value
+	*(pSnakeArray + 0) = *(pSnakeArray + 2) + xDirection;
+	*(pSnakeArray + 1) = *(pSnakeArray + 3) + yDirection;
+
+	
+	return *pSnakeArray;
+	
+}

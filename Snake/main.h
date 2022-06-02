@@ -3,4 +3,6 @@
 
 int output_grid(int width, int height, int grid[width][height]);
 
+int moveSnake(int *pSnakeArray, char direction);
+
 #endif // MAIN_H_INCLUDED

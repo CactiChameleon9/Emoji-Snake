@@ -27,9 +27,9 @@ int drawGrid(int width, int height, int *pSnakeArray){
 		
 			if (snake_index != -1) {
 				snakesFound += 1;
-				if (snakesFound == 1) {
+				if (snake_index == 0) {
 					strcat(widthString, SNAKE[0]);	
-				} else if (snakesFound == snakeLength) {
+				} else if (snake_index == (snakeLength - 1) * 2) {
 					strcat(widthString, SNAKE[2]);
 				} else {
 					strcat(widthString, SNAKE[1]);					
