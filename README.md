@@ -3,6 +3,11 @@ A terminal app for the well know game snake! Its programmed in C and uses emojis
 
 This is my first ever C project, made to help me learn C!!! (success?)
 
+## See it in action!!
+https://user-images.githubusercontent.com/51231053/171856728-2881d41d-be8d-4dd4-9374-356a22a3b67a.mp4
+![image](https://user-images.githubusercontent.com/51231053/171856934-001284ac-5d17-4f79-95e0-bf583e0b5476.png)
+![image](https://user-images.githubusercontent.com/51231053/171857334-93a266b0-856b-4929-bec1-1b342ec92ba9.png)
+
 
 ## Info
 The program takes 2 optional inputs, width and height:
