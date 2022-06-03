@@ -2,6 +2,7 @@
 #include <unistd.h> //sleep and read
 #include <termios.h> //RAW mode
 #include <pthread.h> //seperate input thread
+#include <stdlib.h> //uniform random
 #include "graphics.h"
 #include "main.h"
 
@@ -21,6 +22,8 @@ int main(int arg_size, char **args){
 		height = *args[2];
 	}
 
+	srandom(time(NULL)); //randomise the random seed
+
 	//make the snakeArray (1d because it holds the order) and add default snake
 	int snakeArray[width * height * 2 + 1];
 	snakeArray[0] = width/2 - 1;
@@ -35,6 +38,8 @@ int main(int arg_size, char **args){
 	snakeArray[9] = height/2;
 	snakeArray[10] = -1;
 
+	//define the apple position to the head so it randomises at the start
+	int applePos[2] = {width/2 - 1, height/2};
 
 	enableRawMode();
 
@@ -49,13 +54,20 @@ int main(int arg_size, char **args){
 		//recalc the snakeArray before moving
 		*snakeArray = moveSnake(snakeArray, direction);
 
+		//check for apple collisions and move it if it has, returns 1 if collided
+		if (checkAppleCollision(applePos, snakeArray, width, height) == 1){
+			//TODO points
+			*snakeArray = increaseSnakeLength(snakeArray, 1);
+		}
+
+		//checks if the snake has crashed, returns 1 if they do
 		if (checkSnakeCrash(snakeArray, width, height) == 1){
-			printf("ERROR");
-			alive = 0;
+			alive = 0; //game over
 		}
 	
 		printf("\e[1;1H\e[2J"); //clears terminal before redraw
-		drawGrid(width, height, snakeArray);
+
+		drawGrid(width, height, snakeArray, applePos);
 
 		//sleep for 0.2 seconds before moving (nanosleep because sleep only supports ints)
 	    struct timespec remaining, request = {0, 200000000};
@@ -122,6 +134,58 @@ int moveSnake(int *pSnakeArray, char direction){
 	
 }
 
+
+int increaseSnakeLength(int *pSnakeArray, int amount){
+	for (int i = 0; i < amount; i++){
+	
+		int arrayLen = 0;
+		while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+			arrayLen++;
+		}
+
+		//find the direction of travel of the tail by comparing the last 2 of x and y
+		int x_direction = *(pSnakeArray + arrayLen - 2) - *(pSnakeArray + arrayLen - 4);
+		int y_direction = *(pSnakeArray + arrayLen - 1) - *(pSnakeArray + arrayLen - 3);
+
+		//add new values to the end of the array / back of snake
+		*(pSnakeArray + arrayLen + 0) = *(pSnakeArray + arrayLen - 2) + x_direction;
+		*(pSnakeArray + arrayLen + 1) = *(pSnakeArray + arrayLen - 1) + y_direction;
+
+		//set the ending -1
+		*(pSnakeArray + arrayLen + 2) = -1;
+
+	}
+
+	return *pSnakeArray;
+}
+
+
+
+int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height){
+
+	int arrayLen = 0;
+	while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+		arrayLen++;
+	}
+
+	int appleCollided = 0;
+	for (int i = 0; i < arrayLen; i += 2){
+		if (*(pSnakeArray + i) == *pApplePos && *(pSnakeArray + i + 1) == *(pApplePos + 1)){
+			appleCollided = 1;
+		}
+	}
+
+	//do nothing if no collision detected
+	if (appleCollided == 0) {return 0;} 
+
+	//if a collision is detected, randomise the apple position (not a very good random, ik)
+	*(pApplePos + 0) = random() % width;
+	*(pApplePos + 1) = random() % height;
+
+	return 1;
+}
+
+
 int checkSnakeCrash(int *pSnakeArray, int width, int height){
 	int arrayLen = 0;
 	
@@ -144,7 +208,7 @@ int checkSnakeCrash(int *pSnakeArray, int width, int height){
 		if (*(pSnakeArray + i) >= width || *(pSnakeArray + i + 1) >= height ||
 			*(pSnakeArray + i) <= -1 || *(pSnakeArray + i + 1) <= -1){
 			return 1; //collision
-		}	
+		}
 	}
 
 	return 0;

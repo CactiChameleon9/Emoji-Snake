@@ -5,6 +5,10 @@ int output_grid(int width, int height, int grid[width][height]);
 
 int moveSnake(int *pSnakeArray, char direction);
 
+int increaseSnakeLength(int *pSnakeArray, int amount);
+
+int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height);
+
 int checkSnakeCrash(int *pSnakeArray, int width, int height);
 
 void *inputThread();
