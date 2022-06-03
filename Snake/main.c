@@ -36,7 +36,7 @@ int main(int arg_size, char **args){
 	snakeArray[7] = height/2;
 	snakeArray[8] = width/2 + 3;
 	snakeArray[9] = height/2;
-	snakeArray[10] = -1;
+	snakeArray[10] = -999;
 
 	//define the apple position to the head so it randomises at the start
 	int applePos[2] = {width/2 - 1, height/2};
@@ -80,7 +80,7 @@ int moveSnake(int *pSnakeArray, char direction){
 
 	int arrayLen = 0;
 	
-	while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+	while (*(pSnakeArray + arrayLen) != -999 ){ //go through the array until end is found (-999)
 		arrayLen++;
 	}
 
@@ -122,8 +122,8 @@ int moveSnake(int *pSnakeArray, char direction){
 	for (int i = arrayLen; i > 1; i--){
 		*(pSnakeArray + i) = *(pSnakeArray + i - 2);
 	}
-	//set the last value to -1
-	*(pSnakeArray + arrayLen) = -1;
+	//set the last value to -999
+	*(pSnakeArray + arrayLen) = -999;
 
 	//change the first value
 	*(pSnakeArray + 0) = *(pSnakeArray + 2) + xDirection;
@@ -139,20 +139,20 @@ int increaseSnakeLength(int *pSnakeArray, int amount){
 	for (int i = 0; i < amount; i++){
 	
 		int arrayLen = 0;
-		while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+		while (*(pSnakeArray + arrayLen) != -999 ){ //go through the array until end is found (-999)
 			arrayLen++;
 		}
 
 		//find the direction of travel of the tail by comparing the last 2 of x and y
-		int x_direction = *(pSnakeArray + arrayLen - 2) - *(pSnakeArray + arrayLen - 4);
-		int y_direction = *(pSnakeArray + arrayLen - 1) - *(pSnakeArray + arrayLen - 3);
+		int xDirection = *(pSnakeArray + arrayLen - 2) - *(pSnakeArray + arrayLen - 4);
+		int yDirection = *(pSnakeArray + arrayLen - 1) - *(pSnakeArray + arrayLen - 3);
 
 		//add new values to the end of the array / back of snake
-		*(pSnakeArray + arrayLen + 0) = *(pSnakeArray + arrayLen - 2) + x_direction;
-		*(pSnakeArray + arrayLen + 1) = *(pSnakeArray + arrayLen - 1) + y_direction;
+		*(pSnakeArray + arrayLen + 0) = *(pSnakeArray + arrayLen - 2) + xDirection;
+		*(pSnakeArray + arrayLen + 1) = *(pSnakeArray + arrayLen - 1) + yDirection;
 
-		//set the ending -1
-		*(pSnakeArray + arrayLen + 2) = -1;
+		//set the ending -999
+		*(pSnakeArray + arrayLen + 2) = -999;
 
 	}
 
@@ -164,7 +164,7 @@ int increaseSnakeLength(int *pSnakeArray, int amount){
 int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height){
 
 	int arrayLen = 0;
-	while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+	while (*(pSnakeArray + arrayLen) != -999 ){ //go through the array until end is found (-999)
 		arrayLen++;
 	}
 
@@ -189,7 +189,7 @@ int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height)
 int checkSnakeCrash(int *pSnakeArray, int width, int height){
 	int arrayLen = 0;
 	
-	while (*(pSnakeArray + arrayLen) != -1 ){ //go through the array until end is found (-1)
+	while (*(pSnakeArray + arrayLen) != -999 ){ //go through the array until end is found (-999)
 		arrayLen++;
 	}
 

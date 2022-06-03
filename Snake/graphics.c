@@ -9,10 +9,9 @@ const char * APPLE[] = {"🍎", "🍏"};
 int drawGrid(int width, int height, int *pSnakeArray, int *pApplePos){
 
 	//used to tell if its the start/end of the snake
-	int snakesFound = 0;
 	int snakeLength = 0;
 	
-	while (*(pSnakeArray + snakeLength) != -1 ){ //go through the array until end is found (-1)
+	while (*(pSnakeArray + snakeLength) != -999 ){ //go through the array until end is found (-1)
 		snakeLength++;
 	}
 	snakeLength = (snakeLength) / 2; //half it because array contains coordinates
@@ -20,16 +19,16 @@ int drawGrid(int width, int height, int *pSnakeArray, int *pApplePos){
 	//this prints an x*y grid of dots
 	for (int i = 0; i < height; i++){
 
-		char widthString[200] = "";
-		
+		//generate each line of text to be printed at a time
+		char widthString[1000] = "";
+
+		//2 characters are added each loop
 		for (int j = 0; j < width; j++){
 
 			int snake_index = linearXYSearch(snakeLength * 2, pSnakeArray, j, i);
 		
 			if (snake_index != -1) { //if a snake is found in that space
-			
-				snakesFound += 1;
-				
+							
 				if (snake_index == 0) { //first value is the head
 					strcat(widthString, SNAKE[0]);
 					
@@ -47,6 +46,7 @@ int drawGrid(int width, int height, int *pSnakeArray, int *pApplePos){
 			}
 		}
 
+		//print the line generated
 		printf("%s\n", widthString);
 		
 	}
