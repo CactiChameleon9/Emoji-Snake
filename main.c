@@ -18,8 +18,8 @@ int main(int arg_size, char **args){
 
 	//if there are enough arguments (0 is the executable name)
 	if (arg_size >= 3) {
-		width = *args[1];
-		height = *args[2];
+		width = strtol(args[1], NULL, 10);
+		height = strtol(args[2], NULL, 10);
 	}
 
 	srandom(time(NULL)); //randomise the random seed
