@@ -7,7 +7,9 @@ int moveSnake(int *pSnakeArray, char direction);
 
 int increaseSnakeLength(int *pSnakeArray, int amount);
 
-int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height);
+int checkAppleCollision(int *pApplePos, int *pSnakeArray);
+
+int moveApple(int *pApplePos, int *pSnakeArray, int width, int height);
 
 int checkSnakeCrash(int *pSnakeArray, int width, int height);
 

@@ -40,8 +40,9 @@ int main(int arg_size, char **args){
 	snakeArray[7] = height/2;
 	snakeArray[10] = -999;
 
-	//define the apple position to the head so it randomises at the start
-	int applePos[2] = {width/2 - 1, height/2};
+	//define the apple position and randomise its position
+	int applePos[2] = {0, 0};
+	*applePos = moveApple(applePos, snakeArray, width, height);
 
 	enableRawMode();
 
@@ -57,9 +58,10 @@ int main(int arg_size, char **args){
 		*snakeArray = moveSnake(snakeArray, direction);
 
 		//check for apple collisions and move it if it has, returns 1 if collided
-		if (checkAppleCollision(applePos, snakeArray, width, height) == 1){
+		if (checkAppleCollision(applePos, snakeArray) == 1){
 			//TODO points
 			*snakeArray = increaseSnakeLength(snakeArray, 1);
+			*applePos = moveApple(applePos, snakeArray, width, height);
 		}
 
 		//checks if the snake has crashed, returns 1 if they do
@@ -163,7 +165,7 @@ int increaseSnakeLength(int *pSnakeArray, int amount){
 
 
 
-int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height){
+int checkAppleCollision(int *pApplePos, int *pSnakeArray){
 
 	int arrayLen = 0;
 	while (*(pSnakeArray + arrayLen) != -999 ){ //go through the array until end is found (-999)
@@ -176,17 +178,39 @@ int checkAppleCollision(int *pApplePos, int *pSnakeArray, int width, int height)
 			appleCollided = 1;
 		}
 	}
-
-	//do nothing if no collision detected
-	if (appleCollided == 0) {return 0;} 
-
-	//if a collision is detected, randomise the apple position (not a very good random, ik)
-	*(pApplePos + 0) = random() % width;
-	*(pApplePos + 1) = random() % height;
-
-	return 1;
+	
+	return appleCollided;
 }
 
+
+int moveApple(int *pApplePos, int *pSnakeArray, int width, int height){
+
+	int arrayLen = 0;
+	while (*(pSnakeArray + arrayLen) != -999 ){ //go through the array until end is found (-999)
+		arrayLen++;
+	}
+
+	//reroll apple position until not in snake
+	int unoccupiedPos = 0;
+	
+	while (unoccupiedPos != 1){
+	
+		//if a collision is detected, randomise the apple position (not a very good random, ik)
+		*(pApplePos + 0) = random() % width;
+		*(pApplePos + 1) = random() % height;
+
+		//check to see if the apple isn't in the snake, repeat loop if it is
+		for (int i = 0; i < arrayLen; i += 2){
+			if (*(pSnakeArray + i) != *(pApplePos + 0) && *(pSnakeArray + i + 1) != *(pApplePos + 1)){
+				unoccupiedPos = 1;
+			}
+			
+		}
+	}
+
+	return *pApplePos;
+
+}
 
 int checkSnakeCrash(int *pSnakeArray, int width, int height){
 	int arrayLen = 0;
