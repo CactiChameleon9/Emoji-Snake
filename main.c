@@ -38,8 +38,6 @@ int main(int arg_size, char **args){
 	snakeArray[5] = height/2;
 	snakeArray[6] = width/2 + 2;
 	snakeArray[7] = height/2;
-	snakeArray[8] = width/2 + 3;
-	snakeArray[9] = height/2;
 	snakeArray[10] = -999;
 
 	//define the apple position to the head so it randomises at the start
