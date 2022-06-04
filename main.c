@@ -196,21 +196,19 @@ int checkSnakeCrash(int *pSnakeArray, int width, int height){
 	}
 
 	//check for collisions
-	for (int i = 0; i < arrayLen; i += 2){
-		for (int j = i + 2; j < arrayLen; j += 2){
+	for (int i = 2; i < arrayLen; i += 2){
 
-		//check both x and y
-			if (*(pSnakeArray + i) == *(pSnakeArray + j) &&
-				*(pSnakeArray + i + 1) == *(pSnakeArray + j + 1)) {
-				return 1; //collision
-			}	
-		}
-
-		//check if out of bounds
-		if (*(pSnakeArray + i) >= width || *(pSnakeArray + i + 1) >= height ||
-			*(pSnakeArray + i) <= -1 || *(pSnakeArray + i + 1) <= -1){
+	//check if the head collides with any of the body
+		if (*(pSnakeArray + 0) == *(pSnakeArray + i + 0) &&
+			*(pSnakeArray + 1) == *(pSnakeArray + i + 1)) {
 			return 1; //collision
 		}
+	}
+
+	//check if head out of bounds
+	if (*(pSnakeArray + 0) >= width || *(pSnakeArray + 1) >= height ||
+		*(pSnakeArray + 0) <= -1 || *(pSnakeArray + 1) <= -1){
+		return 1; //collision
 	}
 
 	return 0;
