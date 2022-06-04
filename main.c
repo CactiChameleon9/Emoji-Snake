@@ -18,8 +18,12 @@ int main(int arg_size, char **args){
 
 	//if there are enough arguments (0 is the executable name)
 	if (arg_size >= 3) {
-		width = strtol(args[1], NULL, 10);
-		height = strtol(args[2], NULL, 10);
+		int tmpW = strtol(args[1], NULL, 10);
+		int tmpH = strtol(args[2], NULL, 10);
+
+		//grid cannot be smaller than 5*2
+		if (tmpW >= 5) {width = tmpW;}
+		if (tmpH >= 2) {height = tmpH;}
 	}
 
 	srandom(time(NULL)); //randomise the random seed
