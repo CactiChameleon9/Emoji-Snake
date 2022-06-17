@@ -287,7 +287,7 @@ void *inputThread(){
 //raw mode == more control over the terminal input
 // allows me to get each character as they are entered in (ICANON)
 // and also hides the inputted characters (ECHO)
-int enableRawMode() {
+void enableRawMode() {
 	struct termios raw;
 	
 	tcgetattr(STDIN_FILENO, &raw);

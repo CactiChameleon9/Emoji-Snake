@@ -15,6 +15,6 @@ int checkSnakeCrash(int *pSnakeArray, int width, int height);
 
 void *inputThread();
 
-int enableRawMode();
+void enableRawMode();
 
 #endif // MAIN_H_INCLUDED
